@@ -1,0 +1,22 @@
+{
+  "name": "mern_sporteventsapp",
+  "version": "1.0.0",
+  "description": "MERN",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsvGithub/MERN_SportEventsApp.git"
+  },
+  "keywords": [
+    "MERN"
+  ],
+  "author": "tsv",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tsvGithub/MERN_SportEventsApp/issues"
+  },
+  "homepage": "https://github.com/tsvGithub/MERN_SportEventsApp#readme"
+}
