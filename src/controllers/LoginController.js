@@ -29,7 +29,7 @@ module.exports = {
         };
         return res.json(userResponse);
       } else {
-        return res.status(200).jason({
+        return res.status(200).json({
           message: "Email or Password does not match!",
         });
       }
