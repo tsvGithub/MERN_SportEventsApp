@@ -17,7 +17,15 @@ module.exports = {
           email,
           password: hashedPassword,
         });
-        return res.json(user);
+        //returns all user data (names, email & PASSWORD)
+        // return res.json(user);
+        //returns user data WITHOUT PASSWORD
+        return res.json({
+          _id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        });
       }
       return res.status(400).json({
         message: "User already exist, do you want to login instead?",
