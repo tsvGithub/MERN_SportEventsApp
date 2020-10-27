@@ -1,32 +1,42 @@
 import React, { useState } from "react";
 import api from "../../services/api";
-import { Container, Button, Form, FormGroup, Input } from "reactstrap";
+import { Container, Button, Form, Alert, FormGroup, Input } from "reactstrap";
 
 function Login({ history }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("false");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(`Result of the submit: ${email} ${password}`);
+    // console.log(`Result of the submit: ${email} ${password}`);
     //send to BE route /login email & password
     const response = await api.post("/login", { email, password });
     //get from BE user-id to store it in history
     //to allow the user navigate through the site
     const userId = response.data._id || false;
 
-    if (userId) {
-      //local storage in browser & store user+userId
-      localStorage.setItem("user", userId);
-      //redirect to allowed page
-      history.push("/dashboard");
-    } else {
-      //if user is not loged in
-      //get message from response
-      const { message } = response.data;
-      //"User not found" from BE
-      console.log(message);
+    try {
+      if (userId) {
+        setError(false);
+        setErrorMessage("");
+        //local storage in browser & store user+userId
+        localStorage.setItem("user", userId);
+        //redirect to allowed page
+        history.push("/dashboard");
+      } else {
+        //if user is not loged in
+        //get message from response
+        const { message } = response.data;
+        //"User not found" from BE
+        console.log(message);
+        setError(true);
+        setErrorMessage(message);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -34,29 +44,46 @@ function Login({ history }) {
     <Container>
       <h2>Login:</h2>
       <p>
-        Please <strong>Login</strong>into your account
+        Please <strong>Login</strong> into your account
       </p>
       <Form onSubmit={handleSubmit}>
-        <FormGroup className="mb-2 mr-sm-s mb-sm-0">
-          <Input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Your email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <div className="input-group">
+          <FormGroup className="form-group-"></FormGroup>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Your email"
+              onChange={(evt) => setEmail(evt.target.value)}
+            />
+          </FormGroup>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Your password"
+              onChange={(evt) => setPassword(evt.target.value)}
+            />
+          </FormGroup>
+        </div>
+        <FormGroup>
+          <Button className="submit-btn">Submit</Button>
         </FormGroup>
-        <FormGroup className="mb-2 mr-sm-s mb-sm-0">
-          <Input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Your password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <FormGroup>
+          <Button className="secondary-btn" onClick={() => history.push("/register")}>
+            New Account
+          </Button>
         </FormGroup>
-        <Button>Submit</Button>
       </Form>
+      {error ? (
+        <Alert className="event-validation" color="danger">
+          Missing required information
+        </Alert>
+      ) : (
+        ""
+      )}
     </Container>
   );
 }
