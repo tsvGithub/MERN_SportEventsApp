@@ -20,23 +20,26 @@ function Login({ history }) {
 
     try {
       if (userId) {
-        setError(false);
-        setErrorMessage("");
         //local storage in browser & store user+userId
         localStorage.setItem("user", userId);
         //redirect to allowed page
-        history.push("/dashboard");
+        history.push("/");
       } else {
         //if user is not loged in
         //get message from response
         const { message } = response.data;
         //"User not found" from BE
-        console.log(message);
         setError(true);
         setErrorMessage(message);
+        setTimeout(() => {
+          setError(false);
+          setErrorMessage("");
+        }, 2000);
       }
     } catch (error) {
       console.log(error);
+      setError(true);
+      setErrorMessage("The server returned the Error...");
     }
   };
 
@@ -79,7 +82,7 @@ function Login({ history }) {
       </Form>
       {error ? (
         <Alert className="event-validation" color="danger">
-          Missing required information
+          {errorMessage}
         </Alert>
       ) : (
         ""

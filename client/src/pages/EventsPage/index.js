@@ -1,6 +1,18 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import api from "../../services/api";
-import { Container, Button, Form, FormGroup, Input, Label, Alert } from "reactstrap";
+import {
+  Alert,
+  Container,
+  Button,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  ButtonDropdown,
+} from "reactstrap";
 import cameraIcon from "../../assets/camera.png";
 import "./events.css";
 
@@ -9,13 +21,17 @@ export default function EventsPage({ history }) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
-  const [sport, setSport] = useState("");
+  const [sport, setSport] = useState("Sport");
   const [date, setDate] = useState("");
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const user_id = localStorage.getItem("user");
   // console.log(user_id);
+
+  const toggle = () => setDropdownOpen(!dropdownOpen);
+
   //useMemo => refresh the page and do not lose thumbnail
   const preview = useMemo(() => {
     //if there is a thumbnail
@@ -51,7 +67,14 @@ export default function EventsPage({ history }) {
     //   console.log(error);
     // }
     try {
-      if (title !== "" && description !== "" && price !== "" && sport !== "" && date !== "" && thumbnail !== null) {
+      if (
+        title !== "" &&
+        description !== "" &&
+        price !== "" &&
+        sport !== "Sport" &&
+        date !== "" &&
+        thumbnail !== null
+      ) {
         await api.post("/event", eventData, { headers: { user_id } });
         setSuccess(true);
         setTimeout(() => {
@@ -69,6 +92,9 @@ export default function EventsPage({ history }) {
     }
   };
 
+  const sportEventHandler = (sport) => setSport(sport);
+  console.log(sport);
+
   return (
     <Container>
       <h2>Create your Event</h2>
@@ -84,16 +110,6 @@ export default function EventsPage({ history }) {
               <Input type="file" onChange={(evt) => setThumbnail(evt.target.files[0])} />
               <img src={cameraIcon} style={{ maxWidth: "50px" }} alt="upload icon image" />
             </Label>
-          </FormGroup>
-          <FormGroup>
-            <Label>Sport: </Label>
-            <Input
-              id="sport"
-              type="text"
-              value={sport}
-              placeholder={"Sport name"}
-              onChange={(evt) => setSport(evt.target.value)}
-            />
           </FormGroup>
           <FormGroup>
             <Label>Title: </Label>
@@ -135,12 +151,26 @@ export default function EventsPage({ history }) {
               onChange={(evt) => setDate(evt.target.value)}
             />
           </FormGroup>
+          <FormGroup>
+            <ButtonDropdown isOpen={dropdownOpen} toggle={toggle}>
+              <Button id="caret" value={sport} disabled>
+                {sport}
+              </Button>
+              <DropdownToggle caret />
+              <DropdownMenu>
+                <DropdownItem onClick={() => sportEventHandler("running")}>running</DropdownItem>
+                <DropdownItem onClick={() => sportEventHandler("cycling")}>cycling</DropdownItem>
+                <DropdownItem onClick={() => sportEventHandler("swimming")}>swimming</DropdownItem>
+                <DropdownItem onClick={() => sportEventHandler("other")}>other</DropdownItem>
+              </DropdownMenu>
+            </ButtonDropdown>
+          </FormGroup>
         </div>
         <FormGroup>
           <Button className="submit-btn">Submit</Button>
         </FormGroup>
         <FormGroup>
-          <Button className="secondary-btn" onClick={() => history.push("/dashboard")}>
+          <Button className="secondary-btn" onClick={() => history.push("/")}>
             Dashboard
           </Button>
         </FormGroup>
