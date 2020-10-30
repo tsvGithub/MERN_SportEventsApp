@@ -5,9 +5,12 @@ import { Alert, Button, ButtonGroup } from "reactstrap";
 import "./dashboard.css";
 
 //Dashboard shows all the events
-const Dashboard = ({ history }) => {
+export default function Dashboard({ history }) {
   const [events, setEvents] = useState([]);
-  const user_id = localStorage.getItem("user");
+
+  const user = localStorage.getItem("user");
+  const user_id = localStorage.getItem("user_id");
+
   const [rSelected, setRSelected] = useState(null);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -18,27 +21,37 @@ const Dashboard = ({ history }) => {
     getEvents();
   }, []);
 
-  const myEventsHandler = async () => {
-    setRSelected("myevents");
-    const response = await api.get("/user/events", { headers: { user_id } });
-    setEvents(response.data);
-  };
-
   const filterHandler = (query) => {
     setRSelected(query);
     getEvents(query);
   };
 
+  const myEventsHandler = async () => {
+    // debugger;
+    try {
+      setRSelected("myevents");
+      const response = await api.get("/user/events", { headers: { user: user } });
+      // console.log("DBPAGE: RESPONSE", response);
+      // console.log("DBPAGE: response.data.events", response.data.events);
+      setEvents(response.data.events);
+    } catch (error) {
+      history.push("/login");
+    }
+  };
   const getEvents = async (filter) => {
-    const url = filter ? `/dashboard/${filter}` : "/dashboard";
-    const response = await api.get(url, { headers: { user_id } });
-
-    setEvents(response.data);
+    try {
+      const url = filter ? `/dashboard/${filter}` : "/dashboard";
+      const response = await api.get(url, { headers: { user: user } });
+      // console.log(response.data.events);
+      setEvents(response.data.events);
+    } catch (error) {
+      history.push("/login");
+    }
   };
 
   const deleteEventHandler = async (eventId) => {
     try {
-      await api.delete(`/event/${eventId}`);
+      await api.delete(`/event/${eventId}`, { headers: { user: user } });
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -85,7 +98,7 @@ const Dashboard = ({ history }) => {
       <ul className="events-list">
         {events.map((event) => (
           <li key={event._id}>
-            {console.log({ event })}
+            {/* {console.log({ event })} */}
             <header style={{ backgroundImage: `url(${event.thumbnail_url})` }}>
               {event.user === user_id ? (
                 <div>
@@ -121,6 +134,6 @@ const Dashboard = ({ history }) => {
       )}
     </>
   );
-};
+}
 
-export default Dashboard;
+// export default Dashboard;

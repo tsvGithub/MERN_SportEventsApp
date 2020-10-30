@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8000;
 
 require("dotenv").config();
 // console.log(process.env.MONGODB_URI);
+// console.log(process.env.SUPER_MARIO);
 
 //----------------------------------------
 // if (process.env.NODE_ENV !== "production") {

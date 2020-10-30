@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   async storeAuth(req, res) {
@@ -27,7 +28,24 @@ module.exports = {
           firstName: user.firstName,
           lastName: user.lastName,
         };
-        return res.json(userResponse);
+        // return res.json(userResponse);
+
+        //JWT.sign gets user object => it is the userResponse
+        //second argument is string 'secret' from .env  where is super strong password
+        //token is userResponse+secret
+        //return user as token & user_id (not hashed!) fro FE
+        return jwt.sign(
+          {
+            user: userResponse,
+          },
+          process.env.SUPER_MARIO,
+          (err, token) => {
+            return res.json({
+              user: token,
+              user_id: userResponse._id,
+            });
+          }
+        );
       } else {
         return res.status(200).json({
           message: "Email or Password does not match!",

@@ -16,12 +16,18 @@ function Login({ history }) {
     const response = await api.post("/login", { email, password });
     //get from BE user-id to store it in history
     //to allow the user navigate through the site
-    const userId = response.data._id || false;
+    //BE=>LoginController:
+    //return res.json({
+    //   user: token,
+    //   user_id: userResponse._id,});
+    const user_id = response.data.user_id || false;
+    const user = response.data.user || false;
 
     try {
-      if (userId) {
-        //local storage in browser & store user+userId
-        localStorage.setItem("user", userId);
+      if (user && user_id) {
+        //local storage in browser & store user+user_id
+        localStorage.setItem("user", user);
+        localStorage.setItem("user_id", user_id);
         //redirect to allowed page
         history.push("/");
       } else {

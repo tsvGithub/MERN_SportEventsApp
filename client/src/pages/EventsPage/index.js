@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import api from "../../services/api";
 import {
   Alert,
@@ -27,8 +27,12 @@ export default function EventsPage({ history }) {
   const [success, setSuccess] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const user_id = localStorage.getItem("user");
-  // console.log(user_id);
+  const user = localStorage.getItem("user");
+  // console.log(user);
+
+  useEffect(() => {
+    if (!user) history.push("/login");
+  }, []);
 
   const toggle = () => setDropdownOpen(!dropdownOpen);
 
@@ -42,7 +46,7 @@ export default function EventsPage({ history }) {
 
   const submitHandler = async (evt) => {
     evt.preventDefault();
-    // const user_id = localStorage.getItem("user");
+    // const user = localStorage.getItem("user");
 
     const eventData = new FormData();
     //get from multi-form data:
@@ -75,7 +79,7 @@ export default function EventsPage({ history }) {
         date !== "" &&
         thumbnail !== null
       ) {
-        await api.post("/event", eventData, { headers: { user_id } });
+        await api.post("/event", eventData, { headers: { user } });
         setSuccess(true);
         setTimeout(() => {
           setSuccess(false);
@@ -94,7 +98,7 @@ export default function EventsPage({ history }) {
   };
 
   const sportEventHandler = (sport) => setSport(sport);
-  console.log(sport);
+  // console.log(sport);
 
   return (
     <Container>
