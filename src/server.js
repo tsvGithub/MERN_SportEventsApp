@@ -4,7 +4,13 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const routes = require("./routes");
 const path = require("path");
+const http = require("http");
+const socketio = require("socket.io");
+
 const PORT = process.env.PORT || 8000;
+//connection socket
+const server = http.Server(app);
+const io = socketio(server);
 
 require("dotenv").config();
 // console.log(process.env.MONGODB_URI);
@@ -16,7 +22,23 @@ require("dotenv").config();
 //   console.log(process.env.MONGODB_URI);
 // }
 //------
+//SOCKET
+//not ideal solution  => better use Redis instead:
+const connectUsers = {};
+io.on("connection", (socket) => {
+  // console.log("User is connected", socket.id);
+  // io.emit("Zhur", { data: "Hello from Zhur server!" });
+  // console.log(socket.handshake.query);
+  const { user } = socket.handshake.query;
+  connectUsers[user] = socket.id;
+});
 //-----------------
+app.use((req, res, next) => {
+  req.io = io;
+  req.connectUsers = connectUsers;
+  return next();
+});
+//------------------
 app.use(cors());
 app.use(express.json());
 app.use("/files", express.static(path.resolve(__dirname, "..", "files")));
@@ -37,6 +59,7 @@ try {
   console.log(error);
 }
 //================================
-app.listen(PORT, () => {
+server.listen(PORT, () => {
+  // app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });

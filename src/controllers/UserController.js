@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   async createUser(req, res) {
@@ -11,7 +12,7 @@ module.exports = {
 
       if (!existenUser) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({
+        const userResponse = await User.create({
           firstName,
           lastName,
           email,
@@ -20,16 +21,23 @@ module.exports = {
         //returns all user data (names, email & PASSWORD)
         // return res.json(user);
         //returns user data WITHOUT PASSWORD
-        return res.json({
-          _id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+        // return res.json({
+        //   _id: user._id,
+        //   email: user.email,
+        //   firstName: user.firstName,
+        //   lastName: user.lastName,
+        // });
+        return jwt.sign({ user: userResponse }, process.env.SUPER_MARIO, (err, token) => {
+          return res.json({
+            user: token,
+            user_id: userResponse._id,
+          });
+        });
+      } else {
+        return res.status(400).json({
+          message: "User already exist, do you want to login instead?",
         });
       }
-      return res.status(400).json({
-        message: "User already exist, do you want to login instead?",
-      });
     } catch (error) {
       throw Error(`Error on registering new User: ${error}`);
     }

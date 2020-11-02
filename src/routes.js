@@ -28,7 +28,7 @@ routes.get("/status", (req, res) => {
 //============ CRUD ===================
 //EVENT REGISTRATION (BOOKING)
 //create booking
-routes.post("/registration/:eventId", RegistrationController.create);
+routes.post("/registration/:eventId", verifyToken, RegistrationController.create);
 //get particular booking
 routes.get("/registration/:registration_id", RegistrationController.getRegistration);
 routes.post("/registration/:registration_id/approvals", ApprovalController.approval);
