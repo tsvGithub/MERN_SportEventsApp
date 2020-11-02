@@ -65,6 +65,12 @@ export default function Dashboard({ history }) {
     }
   };
 
+  const logoutHandler = () => {
+    localStgitorage.removeItem("user");
+    localStorage.removeItem("user_id");
+    history.push("/login");
+  };
+
   return (
     <>
       <div className="filter-panel">
@@ -90,9 +96,14 @@ export default function Dashboard({ history }) {
             other
           </Button>
         </ButtonGroup>
-        <Button color="secondary" onClick={() => history.push("events")}>
-          Events
-        </Button>
+        <ButtonGroup>
+          <Button color="secondary" onClick={() => history.push("events")}>
+            Events
+          </Button>
+          <Button color="danger" onClick={logoutHandler}>
+            Logout
+          </Button>
+        </ButtonGroup>
       </div>
 
       <ul className="events-list">
