@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import api from "../../services/api";
 import moment from "moment";
-import { Alert, Button, ButtonGroup } from "reactstrap";
+import { Button, ButtonGroup, Alert, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
 import socketio from "socket.io-client";
 import "./dashboard.css";
 
@@ -18,6 +18,9 @@ export default function Dashboard({ history }) {
   const [messageHandler, setMessageHandler] = useState("");
   const [eventsRequest, setEventsRequest] = useState([]);
 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const toggle = () => setDropdownOpen(!dropdownOpen);
   // console.log(user_id);
 
   useEffect(() => {
@@ -80,11 +83,11 @@ export default function Dashboard({ history }) {
     }
   };
 
-  const logoutHandler = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("user_id");
-    history.push("/login");
-  };
+  // const logoutHandler = () => {
+  //   localStorage.removeItem("user");
+  //   localStorage.removeItem("user_id");
+  //   history.push("/login");
+  // };
 
   const registrationRequestHandler = async (event) => {
     try {
@@ -123,15 +126,37 @@ export default function Dashboard({ history }) {
                   Accept
                 </Button>
                 <Button color="danger" onClick={() => {}}>
-                  Cancel
+                  Reject
                 </Button>
               </ButtonGroup>
             </li>
           );
         })}
-      </ul>{" "}
+      </ul>
       <div className="filter-panel">
-        Filter:
+        <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+          <DropdownToggle color="primary" caret>
+            Filter
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={() => filterHandler(null)} active={rSelected === null}>
+              All Sports
+            </DropdownItem>
+            <DropdownItem onClick={myEventsHandler} active={rSelected === "myevents"}>
+              My Events
+            </DropdownItem>
+            <DropdownItem onClick={() => filterHandler("running")} active={rSelected === "running"}>
+              Running
+            </DropdownItem>
+            <DropdownItem onClick={() => filterHandler("cycling")} active={rSelected === "cycling"}>
+              Cycling
+            </DropdownItem>
+            <DropdownItem color="primary" onClick={() => filterHandler("swimming")} active={rSelected === "swimming"}>
+              Swimming
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        {/* Filter:
         <ButtonGroup>
           <Button color="primary" onClick={() => filterHandler(null)} active={rSelected === null}>
             All Sports
@@ -152,15 +177,15 @@ export default function Dashboard({ history }) {
           <Button color="primary" onClick={() => filterHandler("other")} active={rSelected === "other"}>
             other
           </Button>
-        </ButtonGroup>
-        <ButtonGroup>
+        </ButtonGroup> */}
+        {/* <ButtonGroup>
           <Button color="secondary" onClick={() => history.push("events")}>
             Events
           </Button>
           <Button color="danger" onClick={logoutHandler}>
             Logout
           </Button>
-        </ButtonGroup>
+        </ButtonGroup> */}
       </div>
       <ul className="events-list">
         {events.map((event) => (
