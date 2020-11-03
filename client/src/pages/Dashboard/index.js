@@ -20,6 +20,9 @@ export default function Dashboard({ history }) {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const [eventRequestMessage, setEventRequestMessage] = useState("");
+  const [eventRequestSuccess, setEventRequestSuccess] = useState(false);
+
   const toggle = () => setDropdownOpen(!dropdownOpen);
   // console.log(user_id);
 
@@ -110,22 +113,56 @@ export default function Dashboard({ history }) {
     }
   };
 
+  const acceptEventHandler = async (eventId) => {
+    try {
+      // console.log("hit");
+      await api.post(`/registration/${eventId}/approvals`, {}, { headers: { user } });
+      setEventRequestSuccess(true);
+      setEventRequestMessage("Event approved successfully!");
+      removeNotificationFromDashboard(eventId);
+      setTimeout(() => {
+        setEventRequestSuccess(false);
+        setEventRequestMessage("");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const rejectEventHandler = async (eventId) => {
+    try {
+      await api.post(`/registration/${eventId}/rejections`, {}, { headers: { user } });
+      setEventRequestSuccess(true);
+      setEventRequestMessage("Event rejected successfully!");
+      removeNotificationFromDashboard(eventId);
+      setTimeout(() => {
+        setEventRequestSuccess(false);
+        setEventRequestMessage("");
+      }, 2000);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+   const removeNotificationFromDashboard = (eventId) => {
+     const newEvents = eventsRequest.filter((event) => event._id !== eventId);
+     setEventsRequest(newEvents);
+   };
+
   return (
     <>
       <ul className="notifications">
         {eventsRequest.map((request) => {
-          console.log(request);
           return (
-            <li key={request.id}>
+            <li key={request._id}>
               <div>
                 <strong>{request.user.email} </strong> is requesting to register to your Event{" "}
                 <strong>{request.event.title}</strong>
               </div>
               <ButtonGroup>
-                <Button color="secondary" onClick={() => {}}>
+                <Button color="secondary" onClick={() => acceptEventHandler(request._id)}>
                   Accept
                 </Button>
-                <Button color="danger" onClick={() => {}}>
+                <Button color="danger" onClick={() => rejectEventHandler(request._id)}>
                   Reject
                 </Button>
               </ButtonGroup>
@@ -133,6 +170,7 @@ export default function Dashboard({ history }) {
           );
         })}
       </ul>
+      {eventRequestSuccess ? <Alert color="success"> {eventRequestMessage}</Alert> : ""}
       <div className="filter-panel">
         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
           <DropdownToggle color="primary" caret>
@@ -190,7 +228,6 @@ export default function Dashboard({ history }) {
       <ul className="events-list">
         {events.map((event) => (
           <li key={event._id}>
-            {/* {console.log({ event })} */}
             <header style={{ backgroundImage: `url(${event.thumbnail_url})` }}>
               {event.user === user_id ? (
                 <div>
@@ -203,7 +240,7 @@ export default function Dashboard({ history }) {
               )}
             </header>
             <strong>{event.title}</strong>
-            <span>Event Date: {moment(event.date).format("LL")}</span>
+            <span>Event Date: {moment(event.date).format("l")}</span>
             <span>Event Price: {parseFloat(event.price).toFixed(2)}</span>
             <span>Event Description: {event.description}</span>
             <Button color="primary" onClick={() => registrationRequestHandler(event)}>
@@ -214,6 +251,7 @@ export default function Dashboard({ history }) {
       </ul>
       {error ? (
         <Alert className="event-validation" color="danger">
+          {" "}
           {messageHandler}
         </Alert>
       ) : (
@@ -229,5 +267,3 @@ export default function Dashboard({ history }) {
     </>
   );
 }
-
-// export default Dashboard;

@@ -31,8 +31,8 @@ routes.get("/status", (req, res) => {
 routes.post("/registration/:eventId", verifyToken, RegistrationController.create);
 //get particular booking
 routes.get("/registration/:registration_id", RegistrationController.getRegistration);
-routes.post("/registration/:registration_id/approvals", ApprovalController.approval);
-routes.post("/registration/:registration_id/rejections", RejectionController.rejection);
+routes.post("/registration/:registration_id/approvals", verifyToken, ApprovalController.approval);
+routes.post("/registration/:registration_id/rejections", verifyToken, RejectionController.rejection);
 //USER LOGIN
 //If your login request is via a user supplying a username and password then a POST is preferable, as details will be sent in the HTTP messages body rather than the URL. Although it will still be sent plain text, unless you're encrypting via https
 routes.post("/login", LoginController.storeAuth);
