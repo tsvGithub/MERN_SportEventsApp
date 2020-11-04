@@ -18,7 +18,7 @@ const TopNav = () => {
   return isLoggedIn ? (
     //   return (
     <div>
-      {console.log(isLoggedIn)}
+      {/* {console.log(isLoggedIn)} */}
 
       <Navbar color="faded" light>
         <NavbarToggler onClick={toggleNavbar} />
@@ -32,6 +32,9 @@ const TopNav = () => {
             </NavItem>
             <NavItem>
               <Link to="/">Dashboard</Link>
+            </NavItem>
+            <NavItem>
+              <Link to="/myregistrations">My Registrations</Link>
             </NavItem>
           </Nav>
         </Collapse>

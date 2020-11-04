@@ -23,6 +23,15 @@ module.exports = {
 
         // console.log(registration.event.user);
 
+        registration.owner = registration.event.user;
+        registration.eventTitile = registration.event.title;
+        registration.eventPrice = registration.event.price;
+        registration.eventDate = registration.event.date;
+        registration.userEmail = registration.user.email;
+        registration.save();
+
+        console.log(registration);
+
         const ownerSocket = req.connectUsers[registration.event.user];
 
         if (ownerSocket) {
@@ -46,5 +55,23 @@ module.exports = {
         message: "Registration not found",
       });
     }
+  },
+
+  getMyRegistrations(req, res) {
+    jwt.verify(req.token, process.env.SUPER_MARIO, async (err, authData) => {
+      if (err) {
+        res.sendStatus(401);
+      } else {
+        try {
+          const registrationsArr = await Registration.find({ owner: authData.user._id });
+          if (registrationsArr) {
+            console.log(registrationsArr);
+            return res.json(registrationsArr);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
   },
 };

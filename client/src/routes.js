@@ -4,6 +4,7 @@ import TopNav from "./components/TopNav";
 import Dashboard from "./pages/Dashboard";
 import EventsPage from "./pages/EventsPage";
 import Login from "./pages/Login";
+import MyRegistrations from "./pages/MyRegistrations";
 import Register from "./pages/Register";
 
 function Routes() {
@@ -12,6 +13,7 @@ function Routes() {
       <TopNav />
       <Switch>
         <Route path="/" exact component={Dashboard} />
+        <Route path="/myregistrations" exact component={MyRegistrations} />
         <Route path="/login" exact component={Login} />
         <Route path="/register" exact component={Register} />
         <Route path="/events" component={EventsPage} />
